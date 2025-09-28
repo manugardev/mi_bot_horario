@@ -1,0 +1,43 @@
+ {
+    "timezone": "Europe/Madrid",
+    "schedule": {
+      "monday": [
+        { "time": "15:35-16:25", "subject": "TFCM CALZ2  👠" },
+        { "time": "16:25-17:15", "subject": "TFCM COC3  👞🧵" },
+        { "time": "17:15-18:05", "subject": "TFCM COC3  👞🧵" },
+        { "time": "18:05-18:20", "subject": "R E C R E O  🛝" },
+	{ "time": "18:20-19:10", "subject": "COME COM2  👗" },
+	{ "time": "19:10-20:00", "subject": "COME COM2  👗" },
+	{ "time": "20:00-20:50", "subject": "COME COM2  👗" }
+      ],
+      "tuesday": [
+        { "time": "15:35-16:25", "subject": "COME COM2  👗" },
+        { "time": "16:25-17:15", "subject": "COME COM2  👗" }, 
+        { "time": "17:15-18:05", "subject": "GUARDIA  👮🏻" },
+        { "time": "18:05-18:20", "subject": "R E C R E O  🛝" },
+	{ "time": "18:20-19:10", "subject": "TFCM CAL2  👠" },
+        { "time": "19:10-20:00", "subject": "TFCM COC3  👞🧵" },
+        { "time": "20:00-20:50", "subject": "RP/RO  📌" }
+      ],
+      "wednesday": [
+        { "time": "16:25-17:15", "subject": "GUARDIA  👮🏻" },
+        { "time": "17:15-18:05", "subject": "GUARDIA  👮🏻" },
+        { "time": "18:05-18:20", "subject": "R E C R E O  🛝" },
+        { "time": "18:20-19:10", "subject": "COME COM2  👗" },
+        { "time": "19:10-20:00", "subject": "COME COM2  👗" },
+        { "time": "20:00-20:50", "subject": "TFCM CAL2  👠" }
+      ],
+      "thursday": [
+	{ "time": "18:20-19:10", "subject": "COME COM2  👗" },        
+	{ "time": "19:10-20:00", "subject": "COME COM2  👗" },
+	{ "time": "18:20-20:50", "subject": "COME COM2  👗" }
+      ],
+      "friday": [
+        { "time": "17:15-18:05", "subject": "COME COM2  👗" },
+        { "time": "18:05-18:20", "subject": "R E C R E O  🛝" },
+	{ "time": "18:20-19:10", "subject": "TFCM CALZ2  👠" },
+        { "time": "19:10-20:00", "subject": "TFCM COC3  👞🧵" }
+      ]
+    }
+  }
+
