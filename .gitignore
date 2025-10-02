@@ -1,0 +1,54 @@
+# ================================
+#   GITIGNORE PARA PROYECTOS PYTHON
+# ================================
+
+# Entorno virtual
+venv/
+ENV/
+env/
+.venv/
+
+# Archivos de entorno (tokens, contraseñas)
+.env
+.env.*
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+
+# Archivos de logs
+*.log
+
+# Archivos temporales / de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Configuración de editores
+.vscode/
+.idea/
+
+# Distribuciones y empaquetados
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Archivos de Jupyter (si llegas a usar)
+.ipynb_checkpoints/
+
+# Archivos de pruebas
+.coverage
+.pytest_cache/
+.tox/
+.mypy_cache/
+
+# Carpeta de caché de pip
+pip-wheel-metadata/
