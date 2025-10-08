@@ -2,19 +2,20 @@ import json
 from datetime import datetime, timedelta
 import pytz
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import (
+    ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+)
 from dotenv import load_dotenv
 import os
 import asyncio
 
-# Cargar token de .env
+# Cargar token del .env
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
     raise ValueError("❌ ERROR: Define BOT_TOKEN en .env")
 
-# Mapeo de días en español a inglés (usado por datetime)
 SPANISH_DAY = {
     "lunes": "monday",
     "martes": "tuesday",
@@ -24,29 +25,25 @@ SPANISH_DAY = {
     "viernes": "friday"
 }
 
-# Cargar el horario compartido
 def load_schedules():
     with open("schedules.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
-# Obtener el horario para un día concreto
 def get_schedule_for_day(day: str):
     schedules = load_schedules()
     tz = pytz.timezone(schedules["timezone"])
-    
+
     if day.lower() == "hoy":
         day_name = datetime.now(tz).strftime("%A").lower()
     elif day.lower() == "mañana":
         day_name = (datetime.now(tz) + timedelta(days=1)).strftime("%A").lower()
     else:
         day_name = SPANISH_DAY.get(day.lower())
-    
+
     if not day_name:
         return None
-    
-    return schedules["schedule"].get(day_name, [])
 
-# --- HANDLERS ---
+    return schedules["schedule"].get(day_name, [])
 
 async def horario_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     schedule = get_schedule_for_day("hoy")
@@ -66,16 +63,16 @@ async def horario_manana(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🤖 Hola! Soy tu bot de horario compartido.\n\n"
-        "Puedes consultar el horario de hoy, mañana o cualquier día escribiendo:\n"
+        "🤖 ¡Hola! Soy tu bot de horario compartido.\n\n"
+        "Puedes consultar el horario escribiendo:\n"
         "lunes, martes, miércoles, jueves, viernes, hoy o mañana.\n\n"
-        "También puedes usar los comandos:\n"
+        "Comandos disponibles:\n"
         "/horario_hoy\n/horario_manana"
     )
 
 async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text.strip().lower()
-    
+
     if texto in SPANISH_DAY or texto in ["hoy", "mañana"]:
         schedule = get_schedule_for_day(texto)
         if not schedule:
@@ -88,16 +85,17 @@ async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "❌ No te entiendo. Escribe un día de la semana, 'hoy' o 'mañana'."
         )
 
-# --- MAIN ---
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-    
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("horario_hoy", horario_hoy))
     app.add_handler(CommandHandler("horario_manana", horario_manana))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensaje_dia))
-    
+
+    print("🤖 Bot en marcha...")
     await app.run_polling()
 
 if __name__ == "__main__":
     asyncio.run(main())
+
