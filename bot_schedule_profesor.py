@@ -2,20 +2,19 @@ import json
 from datetime import datetime, timedelta
 import pytz
 from telegram import Update
-from telegram.ext import (
-    ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-)
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 from dotenv import load_dotenv
 import os
 import asyncio
 
-# Cargar token del .env
+# === CARGAR TOKEN ===
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise ValueError("❌ ERROR: Define BOT_TOKEN en .env")
+    raise ValueError("❌ ERROR: No se encontró BOT_TOKEN en el archivo .env")
 
+# === MAPEO DE DÍAS ===
 SPANISH_DAY = {
     "lunes": "monday",
     "martes": "tuesday",
@@ -25,11 +24,14 @@ SPANISH_DAY = {
     "viernes": "friday"
 }
 
+# === FUNCIONES DE HORARIO ===
 def load_schedules():
+    """Carga el horario desde schedules.json"""
     with open("schedules.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
 def get_schedule_for_day(day: str):
+    """Devuelve el horario correspondiente a un día"""
     schedules = load_schedules()
     tz = pytz.timezone(schedules["timezone"])
 
@@ -45,6 +47,7 @@ def get_schedule_for_day(day: str):
 
     return schedules["schedule"].get(day_name, [])
 
+# === HANDLERS DE COMANDOS ===
 async def horario_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     schedule = get_schedule_for_day("hoy")
     if not schedule:
@@ -64,12 +67,13 @@ async def horario_manana(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 ¡Hola! Soy tu bot de horario compartido.\n\n"
-        "Puedes consultar el horario escribiendo:\n"
-        "lunes, martes, miércoles, jueves, viernes, hoy o mañana.\n\n"
-        "Comandos disponibles:\n"
+        "Puedes consultar el horario de hoy, mañana o cualquier día escribiendo:\n"
+        "👉 lunes, martes, miércoles, jueves, viernes, hoy o mañana.\n\n"
+        "También puedes usar los comandos:\n"
         "/horario_hoy\n/horario_manana"
     )
 
+# === HANDLER DE MENSAJES DE TEXTO ===
 async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text.strip().lower()
 
@@ -85,6 +89,7 @@ async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "❌ No te entiendo. Escribe un día de la semana, 'hoy' o 'mañana'."
         )
 
+# === FUNCIÓN PRINCIPAL ===
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
@@ -93,8 +98,8 @@ async def main():
     app.add_handler(CommandHandler("horario_manana", horario_manana))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensaje_dia))
 
-    print("🤖 Bot en marcha...")
-    await app.run_polling()
+    print("🤖 Bot en marcha en Render...")
+    await app.run_polling(close_loop=False)
 
 if __name__ == "__main__":
     asyncio.run(main())
