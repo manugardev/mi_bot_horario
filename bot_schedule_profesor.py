@@ -5,6 +5,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 from dotenv import load_dotenv
 import os
+import asyncio
 
 # Cargar token de .env
 load_dotenv()
@@ -30,7 +31,7 @@ def load_schedules():
 
 # Obtener el horario para un día concreto
 def get_schedule_for_day(day: str):
-    schedules = load_schedules()  # Ahora schedules es único para todos
+    schedules = load_schedules()
     tz = pytz.timezone(schedules["timezone"])
     
     if day.lower() == "hoy":
@@ -45,7 +46,8 @@ def get_schedule_for_day(day: str):
     
     return schedules["schedule"].get(day_name, [])
 
-# Handler para /horario_hoy
+# --- HANDLERS ---
+
 async def horario_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     schedule = get_schedule_for_day("hoy")
     if not schedule:
@@ -54,7 +56,6 @@ async def horario_hoy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = "\n".join([f"{s['time']} - {s['subject']}" for s in schedule])
     await update.message.reply_text(f"📅 Horario de hoy:\n{text}")
 
-# Handler para /horario_manana
 async def horario_manana(update: Update, context: ContextTypes.DEFAULT_TYPE):
     schedule = get_schedule_for_day("mañana")
     if not schedule:
@@ -63,7 +64,6 @@ async def horario_manana(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = "\n".join([f"{s['time']} - {s['subject']}" for s in schedule])
     await update.message.reply_text(f"📅 Horario de mañana:\n{text}")
 
-# Handler para /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 Hola! Soy tu bot de horario compartido.\n\n"
@@ -73,7 +73,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/horario_hoy\n/horario_manana"
     )
 
-# Handler para mensajes de texto directo
 async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto = update.message.text.strip().lower()
     
@@ -89,20 +88,16 @@ async def mensaje_dia(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "❌ No te entiendo. Escribe un día de la semana, 'hoy' o 'mañana'."
         )
 
-# Función principal
-def main():
+# --- MAIN ---
+async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     
-    # Comandos
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("horario_hoy", horario_hoy))
     app.add_handler(CommandHandler("horario_manana", horario_manana))
-    
-    # Mensajes de texto directo
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, mensaje_dia))
     
-    print("🤖 Bot en marcha... Pulsa Ctrl+C para parar.")
-    app.run_polling()
+    await app.run_polling()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
